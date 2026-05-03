@@ -1,0 +1,27 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.log
+*.db
+*.db-wal
+*.db-shm
+
+# Node / Frontend
+node_modules/
+dist/
+.env.local
+.env.*.local
+
+# Docker
+.dockerignore
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

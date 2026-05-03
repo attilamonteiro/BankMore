@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KafkaFlow" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BankMore.Tarifas.Infrastructure\BankMore.Tarifas.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

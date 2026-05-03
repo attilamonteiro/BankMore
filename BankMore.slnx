@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/ContaCorrente/">
+    <Project Path="src/ContaCorrente/BankMore.ContaCorrente.Api/BankMore.ContaCorrente.Api.csproj" />
+    <Project Path="src/ContaCorrente/BankMore.ContaCorrente.Application/BankMore.ContaCorrente.Application.csproj" />
+    <Project Path="src/ContaCorrente/BankMore.ContaCorrente.Domain/BankMore.ContaCorrente.Domain.csproj" />
+    <Project Path="src/ContaCorrente/BankMore.ContaCorrente.Infrastructure/BankMore.ContaCorrente.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Shared/BankMore.Shared/BankMore.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/Tarifas/">
+    <Project Path="src/Tarifas/BankMore.Tarifas.Domain/BankMore.Tarifas.Domain.csproj" />
+    <Project Path="src/Tarifas/BankMore.Tarifas.Infrastructure/BankMore.Tarifas.Infrastructure.csproj" />
+    <Project Path="src/Tarifas/BankMore.Tarifas.Worker/BankMore.Tarifas.Worker.csproj" />
+  </Folder>
+  <Folder Name="/src/Transferencia/">
+    <Project Path="src/Transferencia/BankMore.Transferencia.Api/BankMore.Transferencia.Api.csproj" />
+    <Project Path="src/Transferencia/BankMore.Transferencia.Application/BankMore.Transferencia.Application.csproj" />
+    <Project Path="src/Transferencia/BankMore.Transferencia.Domain/BankMore.Transferencia.Domain.csproj" />
+    <Project Path="src/Transferencia/BankMore.Transferencia.Infrastructure/BankMore.Transferencia.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/BankMore.ContaCorrente.IntegrationTests/BankMore.ContaCorrente.IntegrationTests.csproj" />
+    <Project Path="tests/BankMore.ContaCorrente.UnitTests/BankMore.ContaCorrente.UnitTests.csproj" />
+    <Project Path="tests/BankMore.Transferencia.IntegrationTests/BankMore.Transferencia.IntegrationTests.csproj" />
+    <Project Path="tests/BankMore.Transferencia.UnitTests/BankMore.Transferencia.UnitTests.csproj" />
+  </Folder>
+</Solution>

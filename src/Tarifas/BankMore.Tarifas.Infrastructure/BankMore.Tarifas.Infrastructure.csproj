@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BankMore.Tarifas.Domain\BankMore.Tarifas.Domain.csproj" />
+    <ProjectReference Include="..\..\Shared\BankMore.Shared\BankMore.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="KafkaFlow" Version="3.1.0" />
+    <PackageReference Include="KafkaFlow.Microsoft.DependencyInjection" Version="3.1.0" />
+    <PackageReference Include="KafkaFlow.Serializer.JsonCore" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+</Project>
