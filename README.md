@@ -9,11 +9,14 @@ Plataforma de banco digital baseada em microsserviços .NET 10 + Vue 3, desenvol
 ```
 BankMore/
 ├── src/
-│   ├── Shared/                  # JWT, Dapper, Idempotência, Modelos de erro
+│   ├── Shared/                  # JWT, Dapper, Idempotência, Modelos de erro, OpenTelemetry, Serilog
 │   ├── ContaCorrente/           # API REST — cadastro, login, movimentação, saldo
 │   ├── Transferencia/           # API REST — transferência entre contas
 │   ├── Tarifas/                 # Worker — desconto de tarifa via Kafka
 │   └── Frontend/bankmore-app/   # SPA Vue 3 + Pinia
+├── infra/
+│   ├── prometheus/              # prometheus.yml + alert-rules.yml
+│   └── grafana/                 # Dashboard e datasource provisionados
 └── tests/
     ├── BankMore.ContaCorrente.UnitTests
     ├── BankMore.ContaCorrente.IntegrationTests
@@ -33,18 +36,8 @@ BankMore/
 | Resiliência | Polly — retry exponencial + circuit breaker |
 | Frontend | Vue 3 (Composition API), Pinia, Vue Router 4, Axios, TypeScript, Tailwind CSS, Vite |
 | Infraestrutura | Docker + Docker Compose, nginx (reverse proxy + SPA fallback) |
+| Observabilidade | OpenTelemetry → Jaeger (traces), Prometheus (métricas), Grafana (dashboards), Seq (logs) |
 | Testes | xUnit, NSubstitute, FluentAssertions, WebApplicationFactory |
-
----
-
-## Serviços
-
-| Serviço | Porta | Descrição |
-|---|---|---|
-| Frontend | http://localhost:8090 | SPA Vue 3 via nginx |
-| API Conta Corrente | http://localhost:5001 | Cadastro, login, movimentação, saldo |
-| API Transferência | http://localhost:5002 | Transferência entre contas |
-| Kafka | localhost:9092 | Broker KRaft |
 
 ---
 
@@ -56,18 +49,55 @@ BankMore/
 
 ### Subir tudo com um comando
 
-```bash
-docker-compose up --build
+```bat
+start.bat
 ```
 
-Aguarde todos os containers ficarem `healthy` (~2 min na primeira vez).  
-Acesse **http://localhost:8090**.
+> Aguarde todos os containers ficarem healthy (~2 min na primeira vez).
 
 ### Derrubar
 
 ```bash
-docker-compose down -v
+docker compose down
 ```
+
+---
+
+## Serviços
+
+| Serviço | URL | Usuário | Senha |
+|---|---|---|---|
+| **Frontend** | http://localhost:8090 | — | — |
+| **API Conta Corrente** (Swagger) | http://localhost:5001/swagger | — | — |
+| **API Transferência** (Swagger) | http://localhost:5002/swagger | — | — |
+| **Seq** (logs) | http://localhost:5340 | `admin` | `Admin@123` |
+| **Jaeger** (traces) | http://localhost:16686 | — | — |
+| **Prometheus** (métricas) | http://localhost:9090 | — | — |
+| **Grafana** (dashboards) | http://localhost:3001 | `admin` | `admin` |
+| **Kafka** | localhost:9092 | — | — |
+
+---
+
+## Observabilidade
+
+### Traces — Jaeger (`http://localhost:16686`)
+Toda requisição às APIs gera spans automáticos via OpenTelemetry. Uma transferência exibe o trace distribuído completo:
+```
+POST /api/transferencia
+  └── POST /api/contacorrente/movimento  (débito origem)
+  └── POST /api/contacorrente/movimento  (crédito destino)
+```
+
+### Métricas — Prometheus + Grafana
+- Prometheus coleta `/metrics` das APIs a cada 15s
+- Grafana exibe o dashboard **BankMore Overview** provisionado automaticamente
+- **Alertas configurados:**
+  - `HighErrorRate` — taxa de erros 5xx > 5% por 5 min (critical)
+  - `HighLatency` — latência p99 > 2s por 5 min (warning)
+  - `KafkaConsumerLag` — lag > 1.000 mensagens por 2 min (warning)
+
+### Logs — Seq (`http://localhost:5340`)
+Logs estruturados de todas as APIs via Serilog + sink HTTP para o Seq.
 
 ---
 
