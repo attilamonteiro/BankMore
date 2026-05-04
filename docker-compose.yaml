@@ -24,6 +24,42 @@ services:
       start_period: 30s
     restart: unless-stopped
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=7d'
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
   api-contacorrente:
     build:
       context: .
@@ -38,11 +74,15 @@ services:
       - Jwt__Audience=BankMore
       - Jwt__ExpirationMinutes=60
       - Kafka__Brokers=kafka:9092
+      - Seq__Url=http://seq:5341
+      - OpenTelemetry__OtlpEndpoint=http://jaeger:4317
     volumes:
       - contacorrente-data:/data
     depends_on:
       kafka:
         condition: service_healthy
+      jaeger:
+        condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
       interval: 15s
@@ -66,6 +106,8 @@ services:
       - Jwt__ExpirationMinutes=60
       - ContaCorrenteApi__BaseUrl=http://api-contacorrente:8080
       - Kafka__Brokers=kafka:9092
+      - Seq__Url=http://seq:5341
+      - OpenTelemetry__OtlpEndpoint=http://jaeger:4317
     volumes:
       - transferencia-data:/data
     depends_on:
@@ -88,11 +130,22 @@ services:
       - ConnectionStrings__Tarifas=Data Source=/data/tarifas.db
       - Kafka__Brokers=kafka:9092
       - Tarifas__PercentualTarifa=1.0
+      - Seq__Url=http://seq:5341
     volumes:
       - tarifas-data:/data
     depends_on:
       kafka:
         condition: service_healthy
+    restart: unless-stopped
+
+  seq:
+    image: datalust/seq:latest
+    ports:
+      - "5340:80"
+      - "5341:5341"
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=Admin@123
     restart: unless-stopped
 
   frontend:
@@ -112,3 +165,4 @@ volumes:
   contacorrente-data:
   transferencia-data:
   tarifas-data:
+  grafana-data:

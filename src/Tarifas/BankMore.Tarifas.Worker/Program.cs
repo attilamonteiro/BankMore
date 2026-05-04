@@ -1,9 +1,19 @@
+using BankMore.Shared.Observability;
 using BankMore.Tarifas.Infrastructure.Database;
 using BankMore.Tarifas.Infrastructure.Extensions;
 using KafkaFlow;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddSerilog((_, config) =>
+    SerilogConfigurator.Configure(
+        new HostBuilderContext(new Dictionary<object, object>())
+        {
+            Configuration = builder.Configuration,
+            HostingEnvironment = builder.Environment
+        },
+        config));
 builder.Services.AddTarifasInfrastructure(builder.Configuration);
 
 var host = builder.Build();

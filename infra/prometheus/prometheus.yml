@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert-rules.yml"
+
+scrape_configs:
+  - job_name: 'contacorrente'
+    static_configs:
+      - targets: ['api-contacorrente:8080']
+    metrics_path: /metrics
+
+  - job_name: 'transferencia'
+    static_configs:
+      - targets: ['api-transferencia:8080']
+    metrics_path: /metrics

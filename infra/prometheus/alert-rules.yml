@@ -1,0 +1,35 @@
+groups:
+  - name: bankmore
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          100 * sum(rate(http_server_request_duration_seconds_count{http_response_status_code=~"5.."}[5m]))
+          /
+          sum(rate(http_server_request_duration_seconds_count[5m])) > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Taxa de erros 5xx acima de 5%"
+          description: "A taxa de erros HTTP 5xx está em {{ $value | printf \"%.2f\" }}% nos últimos 5 minutos."
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(http_server_request_duration_seconds_bucket[5m])) by (le, job)
+          ) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latência p99 acima de 2s em {{ $labels.job }}"
+          description: "O percentil 99 de latência está em {{ $value | printf \"%.2f\" }}s."
+
+      - alert: KafkaConsumerLag
+        expr: kafka_consumer_group_lag > 1000
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Consumer lag Kafka alto"
+          description: "Lag do consumer group está em {{ $value }} mensagens."
